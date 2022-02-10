@@ -1,9 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const db = require("./queries");
-const app = express();
 const cors = require("cors");
 
+const app = express();
 const port = 3001;
 
 app.use(bodyParser.json());
@@ -25,5 +25,7 @@ app.put("/users/:id", db.updateUser);
 app.delete("/users/:id", db.deleteUser);
 
 app.get("/categories", db.getCategories);
+app.post("/categories", db.createCategory);
+app.delete("/categories/:id", db.deleteCategory);
 
 app.listen(port, () => console.log(`App listening on port ${port}`));

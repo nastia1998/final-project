@@ -12,12 +12,12 @@ client.connect();
 
 // GET all users
 const getUsers = (request, response) => {
-  client.query("SELECT * FROM users ORDER BY user_id ASC", (error, results) => {
+  client.query("SELECT * FROM users ORDER BY user_id ASC", (error, result) => {
     if (error) {
       console.log(error);
       throw error;
     }
-    response.status(200).json(results.rows);
+    response.status(200).json(result.rows);
   });
 };
 
@@ -28,11 +28,11 @@ const getUserById = (request, response) => {
   client.query(
     "SELECT * FROM users WHERE user_id = $1",
     [id],
-    (error, results) => {
+    (error, result) => {
       if (error) {
         throw error;
       }
-      response.status(200).json(results.rows);
+      response.status(200).json(result.rows);
     }
   );
 };
@@ -44,7 +44,7 @@ const createUser = (request, response) => {
   client.query(
     "INSERT INTO users (name, email) VALUES ($1, $2)",
     [name, email],
-    (error, results) => {
+    (error, result) => {
       if (error) {
         throw error;
       }
@@ -61,7 +61,7 @@ const updateUser = (request, response) => {
   client.query(
     "UPDATE users SET name = $1, email = $2 WHERE user_id = $3",
     [name, email, id],
-    (error, results) => {
+    (error, result) => {
       if (error) {
         throw error;
       }
@@ -77,7 +77,7 @@ const deleteUser = (request, response) => {
   client.query(
     "DELETE FROM users WHERE user_id = $1",
     [id],
-    (error, results) => {
+    (error, result) => {
       if (error) {
         throw error;
       }
@@ -90,12 +90,43 @@ const deleteUser = (request, response) => {
 const getCategories = (request, response) => {
   client.query(
     "SELECT * FROM categories ORDER BY category_id ASC",
-    (error, results) => {
+    (error, result) => {
       if (error) {
         console.log(error);
         throw error;
       }
-      response.status(200).json(results.rows);
+      response.status(200).json(result.rows);
+    }
+  );
+};
+
+// POST a new category
+const createCategory = async (request, response) => {
+  const { name } = request.body;
+  client.query(
+    "INSERT INTO categories (category_name) VALUES ($1) RETURNING *",
+    [name],
+    (error, result) => {
+      if (error) {
+        console.log(error);
+      }
+      response.status(201).json(result.rows[0]);
+    }
+  );
+};
+
+// DELETE a category
+const deleteCategory = (request, response) => {
+  const id = parseInt(request.params.id);
+
+  client.query(
+    "DELETE FROM categories WHERE category_id = $1",
+    [id],
+    (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).send(`User deleted with ID: ${id}`);
     }
   );
 };
@@ -107,4 +138,6 @@ module.exports = {
   updateUser,
   deleteUser,
   getCategories,
+  createCategory,
+  deleteCategory,
 };

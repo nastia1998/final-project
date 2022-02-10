@@ -1,30 +1,12 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  createEntityAdapter,
+} from "@reduxjs/toolkit";
 import axios from "axios";
 
-const initialState = {
-  categories: [],
-  status: "idle",
-  error: null,
-};
-
-const categoriesSlice = createSlice({
-  name: "categories",
-  initialState,
-  reducers: {},
-  extraReducers(builder) {
-    builder
-      .addCase(fetchCategories.pending, (state, action) => {
-        state.status = "loading";
-      })
-      .addCase(fetchCategories.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.categories = state.categories.concat(action.payload);
-      })
-      .addCase(fetchCategories.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
-      });
-  },
+const categoriesAdapter = createEntityAdapter({
+  selectId: (category) => category.category_id,
 });
 
 const selectAllCategories = (state) => state.categories.categories;
@@ -37,5 +19,65 @@ const fetchCategories = createAsyncThunk(
   }
 );
 
+const addNewCategory = createAsyncThunk(
+  "categories/addNewCategory",
+  async (initialCategory) => {
+    const response = await axios.post(
+      `http://localhost:3001/categories`,
+      initialCategory
+    );
+    return response.data;
+  }
+);
+
+const removeCategory = createAsyncThunk(
+  "categories/removeCategory",
+  async (id) => {
+    const response = await axios.delete(
+      `http://localhost:3001/categories/${id}`
+    );
+    return id;
+  }
+);
+
+const categoriesSlice = createSlice({
+  name: "categories",
+  initialState: categoriesAdapter.getInitialState({
+    status: "idle",
+    error: false,
+  }),
+  reducers: {},
+  extraReducers: {
+    [fetchCategories.pending](state) {
+      state.status = "loading";
+    },
+    [fetchCategories.fulfilled](state, { payload }) {
+      state.status = "succeeded";
+      categoriesAdapter.setAll(state, payload);
+    },
+    [fetchCategories.rejected](state, action) {
+      state.status = "failed";
+      state.error = action.error.message;
+    },
+    [addNewCategory.fulfilled](state, { payload }) {
+      categoriesAdapter.setOne(payload);
+    },
+    [removeCategory.pending](state) {
+      state.status = "loading";
+    },
+    [removeCategory.fulfilled](state, { payload: id }) {
+      state.status = "succeeded";
+      categoriesAdapter.removeOne(state, id);
+    },
+    [removeCategory.rejected](state) {
+      state.status = "failed";
+    },
+  },
+});
+
+export { selectAllCategories, fetchCategories, addNewCategory, removeCategory };
+export const categoriesSelectors = categoriesAdapter.getSelectors(
+  (state) => state.categories
+);
+
 export default categoriesSlice.reducer;
-export { selectAllCategories, fetchCategories };
