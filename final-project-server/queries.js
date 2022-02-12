@@ -88,23 +88,20 @@ const deleteUser = (request, response) => {
 
 // GET all categories
 const getCategories = (request, response) => {
-  client.query(
-    "SELECT * FROM categories ORDER BY category_id ASC",
-    (error, result) => {
-      if (error) {
-        console.log(error);
-        throw error;
-      }
-      response.status(200).json(result.rows);
+  client.query("SELECT * FROM categories ORDER BY id ASC", (error, result) => {
+    if (error) {
+      console.log(error);
+      throw error;
     }
-  );
+    response.status(200).json(result.rows);
+  });
 };
 
 // POST a new category
 const createCategory = async (request, response) => {
   const { name } = request.body;
   client.query(
-    "INSERT INTO categories (category_name) VALUES ($1) RETURNING *",
+    "INSERT INTO categories (name) VALUES ($1) RETURNING *",
     [name],
     (error, result) => {
       if (error) {
@@ -120,13 +117,13 @@ const deleteCategory = (request, response) => {
   const id = parseInt(request.params.id);
 
   client.query(
-    "DELETE FROM categories WHERE category_id = $1",
+    "DELETE FROM categories WHERE id = $1 RETURNING id",
     [id],
     (error, result) => {
       if (error) {
         throw error;
       }
-      response.status(200).send(`User deleted with ID: ${id}`);
+      response.status(200).json(result.rows[0].id);
     }
   );
 };

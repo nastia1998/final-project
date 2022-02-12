@@ -5,25 +5,23 @@ import { addNewCategory } from "./categoriesSlice";
 
 const AddCategoryForm = () => {
   const [name, setName] = useState("");
-  const [addRequestStatus, setAddRequestStatus] = useState("idle");
+
   const dispatch = useDispatch();
 
-  const onNameChanged = (e) => setName(e.target.value);
+  const onNameChanged = (e) => {
+    setName(e.target.value);
+  };
 
-  const canSave = [name].every(Boolean) && addRequestStatus === "idle";
+  const canSave = [name].every(Boolean);
 
-  const onSaveCategoryClicked = async () => {
-    if (canSave) {
-      try {
-        setAddRequestStatus("pending");
+  const onSaveCategory = async () => {
+    try {
+      if (canSave) {
         await dispatch(addNewCategory({ name })).unwrap();
-
         setName("");
-      } catch (err) {
-        console.error("Failed to save the category: ", err);
-      } finally {
-        setAddRequestStatus("idle");
       }
+    } catch (err) {
+      console.error("Failed to create the category: ", err);
     }
   };
 
@@ -40,11 +38,7 @@ const AddCategoryForm = () => {
           value={name}
           onChange={onNameChanged}
         />
-        <button
-          type="button"
-          onClick={onSaveCategoryClicked}
-          disabled={!canSave}
-        >
+        <button type="button" onClick={onSaveCategory} disabled={!canSave}>
           Save Category
         </button>
       </form>

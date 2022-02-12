@@ -6,10 +6,8 @@ import {
 import axios from "axios";
 
 const categoriesAdapter = createEntityAdapter({
-  selectId: (category) => category.category_id,
+  selectId: (category) => category.id,
 });
-
-const selectAllCategories = (state) => state.categories.categories;
 
 const fetchCategories = createAsyncThunk(
   "/categories/fetchCategories",
@@ -20,7 +18,7 @@ const fetchCategories = createAsyncThunk(
 );
 
 const addNewCategory = createAsyncThunk(
-  "categories/addNewCategory",
+  "categories/addCategory",
   async (initialCategory) => {
     const response = await axios.post(
       `http://localhost:3001/categories`,
@@ -33,9 +31,7 @@ const addNewCategory = createAsyncThunk(
 const removeCategory = createAsyncThunk(
   "categories/removeCategory",
   async (id) => {
-    const response = await axios.delete(
-      `http://localhost:3001/categories/${id}`
-    );
+    await axios.delete(`http://localhost:3001/categories/${id}`);
     return id;
   }
 );
@@ -59,8 +55,16 @@ const categoriesSlice = createSlice({
       state.status = "failed";
       state.error = action.error.message;
     },
+    [addNewCategory.pending](state) {
+      state.status = "loading";
+    },
     [addNewCategory.fulfilled](state, { payload }) {
-      categoriesAdapter.setOne(payload);
+      state.status = "succeeded";
+      categoriesAdapter.addOne(state, payload);
+    },
+    [addNewCategory.rejected](state, action) {
+      state.status = "failed";
+      state.error = action.error.message;
     },
     [removeCategory.pending](state) {
       state.status = "loading";
@@ -75,7 +79,7 @@ const categoriesSlice = createSlice({
   },
 });
 
-export { selectAllCategories, fetchCategories, addNewCategory, removeCategory };
+export { fetchCategories, addNewCategory, removeCategory };
 export const categoriesSelectors = categoriesAdapter.getSelectors(
   (state) => state.categories
 );

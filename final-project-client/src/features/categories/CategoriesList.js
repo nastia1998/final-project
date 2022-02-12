@@ -9,12 +9,12 @@ import { Spinner } from "../../components/Spinner";
 
 const CategoryExcerpt = ({ category, onRemoveCategory }) => {
   return (
-    <article key={category.category_id} id={category.category_id}>
-      <h3>{category.category_name}</h3>
+    <article key={category.id}>
+      <h3>{category.name}</h3>
       <button
         type="button"
         id={category.category_id}
-        onClick={() => onRemoveCategory(category.category_id)}
+        onClick={() => onRemoveCategory(category.id)}
       >
         Delete
       </button>
@@ -35,14 +35,16 @@ const CategoriesList = () => {
     }
   }, [categoryStatus, dispatch]);
 
-  const onRemoveCategory = useCallback((id) => {
-    try {
-      dispatch(removeCategory(id));
-    } catch (err) {
-      console.error("Failed to remove the category: ", err);
-    } finally {
-    }
-  }, []);
+  const onRemoveCategory = useCallback(
+    (id) => {
+      try {
+        dispatch(removeCategory(id));
+      } catch (err) {
+        console.error("Failed to remove the category: ", err);
+      }
+    },
+    [dispatch]
+  );
 
   let content;
   if (categoryStatus === "loading") {
@@ -50,9 +52,9 @@ const CategoriesList = () => {
   } else if (categoryStatus === "succeeded") {
     content = categories.map((category) => (
       <CategoryExcerpt
-        key={category.category_id}
+        key={category.id}
         category={category}
-        id={category.category_id}
+        id={category.id}
         onRemoveCategory={onRemoveCategory}
       />
     ));
