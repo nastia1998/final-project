@@ -26,6 +26,7 @@ app.delete("/users/:id", db.deleteUser);
 
 app.get("/categories", db.getCategories);
 app.post("/categories", db.createCategory);
+app.patch("/categories/:id", db.updateCategory);
 app.delete("/categories/:id", db.deleteCategory);
 
 app.listen(port, () => console.log(`App listening on port ${port}`));

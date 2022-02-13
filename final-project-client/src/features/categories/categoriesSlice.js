@@ -36,6 +36,15 @@ const removeCategory = createAsyncThunk(
   }
 );
 
+const updateCategory = createAsyncThunk(
+  "categories/updateCategory",
+  async ({ id, name }) => {
+    await axios.patch(`http://localhost:3001/categories/${id}`, { name });
+    console.log();
+    return { id, changes: { name } };
+  }
+);
+
 const categoriesSlice = createSlice({
   name: "categories",
   initialState: categoriesAdapter.getInitialState({
@@ -76,10 +85,26 @@ const categoriesSlice = createSlice({
     [removeCategory.rejected](state) {
       state.status = "failed";
     },
+    [updateCategory.pending](state) {
+      state.status = "loading";
+    },
+    [updateCategory.fulfilled](state, { payload }) {
+      state.status = "succeeded";
+      console.log({ payload });
+      categoriesAdapter.updateOne(state, {
+        id: payload.id,
+        changes: payload.changes,
+      });
+    },
+    [updateCategory.rejected](state, action) {
+      state.status = "failed";
+      state.error = action.error.message;
+    },
   },
 });
 
-export { fetchCategories, addNewCategory, removeCategory };
+export { fetchCategories, addNewCategory, removeCategory, updateCategory };
+
 export const categoriesSelectors = categoriesAdapter.getSelectors(
   (state) => state.categories
 );

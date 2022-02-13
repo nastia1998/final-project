@@ -128,6 +128,27 @@ const deleteCategory = (request, response) => {
   );
 };
 
+// PUT update user
+const updateCategory = (request, response) => {
+  const id = parseInt(request.params.id);
+  console.log({ id, name: request.body });
+  const { name } = request.body;
+
+  console.log({ id, name });
+
+  client.query(
+    "UPDATE categories SET name = $1 WHERE id = $2 RETURNING *",
+    [name, id],
+    (error, result) => {
+      if (error) {
+        console.log(error);
+      }
+      console.log({ result: result.rows[0] });
+      response.status(200).json(result.rows[0]);
+    }
+  );
+};
+
 module.exports = {
   getUsers,
   getUserById,
@@ -137,4 +158,5 @@ module.exports = {
   getCategories,
   createCategory,
   deleteCategory,
+  updateCategory,
 };

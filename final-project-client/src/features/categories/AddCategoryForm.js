@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-
 import { addNewCategory } from "./categoriesSlice";
+import { Box, TextField, IconButton } from "@mui/material";
+import SaveIcon from "@mui/icons-material/Save";
 
 const AddCategoryForm = () => {
   const [name, setName] = useState("");
@@ -26,23 +27,22 @@ const AddCategoryForm = () => {
   };
 
   return (
-    <section>
-      <h2>Add a New Category</h2>
-      <form>
-        <label htmlFor="categoryName">Category Name:</label>
-        <input
-          type="text"
-          id="categoryName"
-          name="categoryName"
-          placeholder="What's your new category?"
-          value={name}
-          onChange={onNameChanged}
-        />
-        <button type="button" onClick={onSaveCategory} disabled={!canSave}>
-          Save Category
-        </button>
-      </form>
-    </section>
+    <Box>
+      <h3>Add a New Category</h3>
+      <label htmlFor="categoryName">Category Name:</label>
+      <TextField
+        type="text"
+        id="categoryName"
+        name="categoryName"
+        required
+        label="What's your new category?"
+        value={name}
+        onChange={onNameChanged}
+      />
+      <IconButton onClick={onSaveCategory} disabled={!canSave}>
+        <SaveIcon />
+      </IconButton>
+    </Box>
   );
 };
 
