@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Navbar } from "./app/Navbar";
 import { CategoriesList } from "./features/categories/CategoriesList";
+import { OperationsList } from "./features/operations/OperationsList";
 
 import "./App.css";
 import { AddCategoryForm } from "./features/categories/AddCategoryForm";
@@ -23,6 +24,7 @@ function App() {
               </React.Fragment>
             }
           />
+          <Route exact path="/operations" element={<OperationsList />} />
         </Routes>
       </div>
     </Router>

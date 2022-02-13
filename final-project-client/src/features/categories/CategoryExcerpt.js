@@ -12,13 +12,12 @@ const CategoryExcerpt = ({ category, onRemoveCategory, onUpdateCategory }) => {
     setCategoryName(e.target.value);
   };
 
-  const onEditCategory = (e) => {
-    console.log("onEditCategory");
+  const onEditCategory = () => {
     setReadOnly(false);
   };
 
   return (
-    <Box key={category.id}>
+    <Box key={category.id} sx={{ m: 2 }}>
       <TextField
         value={categoryName}
         InputProps={{ readOnly: isReadOnly }}

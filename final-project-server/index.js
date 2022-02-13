@@ -29,4 +29,9 @@ app.post("/categories", db.createCategory);
 app.patch("/categories/:id", db.updateCategory);
 app.delete("/categories/:id", db.deleteCategory);
 
+app.get("/operations", db.getOperations);
+app.post("/operations", db.createOperation);
+app.patch("/operations/:id", db.updateOperation);
+app.delete("/operations/:id", db.deleteOperation);
+
 app.listen(port, () => console.log(`App listening on port ${port}`));

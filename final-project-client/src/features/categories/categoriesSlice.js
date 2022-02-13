@@ -40,7 +40,6 @@ const updateCategory = createAsyncThunk(
   "categories/updateCategory",
   async ({ id, name }) => {
     await axios.patch(`http://localhost:3001/categories/${id}`, { name });
-    console.log();
     return { id, changes: { name } };
   }
 );
@@ -90,7 +89,6 @@ const categoriesSlice = createSlice({
     },
     [updateCategory.fulfilled](state, { payload }) {
       state.status = "succeeded";
-      console.log({ payload });
       categoriesAdapter.updateOne(state, {
         id: payload.id,
         changes: payload.changes,

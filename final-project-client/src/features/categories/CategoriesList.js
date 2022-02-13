@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   fetchCategories,
@@ -33,29 +33,16 @@ const CategoriesList = () => {
     [dispatch]
   );
 
-  // const onEditCategory = () => {
-  //   setReadOnly(false);
-  // };
-
   const onUpdateCategory = useCallback(
     (id, name) => {
       try {
         dispatch(updateCategory({ id, name }));
-        console.log({ id, name });
       } catch (err) {
         console.error("Failed to update the category", err);
       }
     },
     [dispatch]
   );
-
-  // const onUpdateCategory = (id) => {
-  //   categories.forEach((category) => {
-  //     if (category.id === id) {
-  //       setReadOnly(false);
-  //     }
-  //   });
-  // };
 
   let content;
   if (categoryStatus === "loading") {
@@ -68,8 +55,6 @@ const CategoriesList = () => {
         id={category.id}
         onRemoveCategory={onRemoveCategory}
         onUpdateCategory={onUpdateCategory}
-        // onEditCategory={onEditCategory}
-        // isReadOnly={isReadOnly}
       />
     ));
   } else if (categoryStatus === "failed") {

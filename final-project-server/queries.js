@@ -98,16 +98,33 @@ const getCategories = (request, response) => {
 };
 
 // POST a new category
-const createCategory = async (request, response) => {
-  const { name } = request.body;
+const createCategory = (request, response) => {
+  const { name, description } = request.body;
   client.query(
-    "INSERT INTO categories (name) VALUES ($1) RETURNING *",
-    [name],
+    "INSERT INTO categories (name, description) VALUES ($1, $2) RETURNING *",
+    [name, description],
     (error, result) => {
       if (error) {
         console.log(error);
       }
       response.status(201).json(result.rows[0]);
+    }
+  );
+};
+
+// PUT update user
+const updateCategory = (request, response) => {
+  const id = parseInt(request.params.id);
+  const { name } = request.body;
+
+  client.query(
+    "UPDATE categories SET name = $1 WHERE id = $2 RETURNING *",
+    [name, id],
+    (error, result) => {
+      if (error) {
+        console.log(error);
+      }
+      response.status(200).json(result.rows[0]);
     }
   );
 };
@@ -128,23 +145,64 @@ const deleteCategory = (request, response) => {
   );
 };
 
-// PUT update user
-const updateCategory = (request, response) => {
-  const id = parseInt(request.params.id);
-  console.log({ id, name: request.body });
-  const { name } = request.body;
-
-  console.log({ id, name });
-
+// GET all operations
+const getOperations = (request, response) => {
   client.query(
-    "UPDATE categories SET name = $1 WHERE id = $2 RETURNING *",
-    [name, id],
+    "SELECT * FROM operations ORDER BY operation_date DESC",
+    (error, result) => {
+      if (error) {
+        console.log(error);
+        throw error;
+      }
+      response.status(200).json(result.rows);
+    }
+  );
+};
+
+// POST a new operation
+const createOperation = (request, response) => {
+  const { categoryId, date, sum } = request.body;
+  client.query(
+    "INSERT INTO operations (category_id, operation_date, operation_sum) VALUES ($1, $2, $3) RETURNING *",
+    [categoryId, date, sum],
     (error, result) => {
       if (error) {
         console.log(error);
       }
-      console.log({ result: result.rows[0] });
+      response.status(201).json(result.rows[0]);
+    }
+  );
+};
+
+// PUT update operation
+const updateOperation = (request, response) => {
+  const id = parseInt(request.params.id);
+  const { categoryId, date, sum } = request.body;
+
+  client.query(
+    "UPDATE operations SET category_id = $1, operation_data = $2, operation_sum = $3 WHERE id = $4 RETURNING *",
+    [categoryId, date, sum, id],
+    (error, result) => {
+      if (error) {
+        console.log(error);
+      }
       response.status(200).json(result.rows[0]);
+    }
+  );
+};
+
+// DELETE an operation
+const deleteOperation = (request, response) => {
+  const id = parseInt(request.params.id);
+
+  client.query(
+    "DELETE FROM operations WHERE id = $1 RETURNING id",
+    [id],
+    (error, result) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(result.rows[0].id);
     }
   );
 };
@@ -155,8 +213,14 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
+  // categories
   getCategories,
   createCategory,
   deleteCategory,
   updateCategory,
+  // operations
+  getOperations,
+  createOperation,
+  updateOperation,
+  deleteOperation,
 };
