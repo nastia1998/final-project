@@ -180,7 +180,7 @@ const updateOperation = (request, response) => {
   const { categoryId, date, sum } = request.body;
 
   client.query(
-    "UPDATE operations SET category_id = $1, operation_data = $2, operation_sum = $3 WHERE id = $4 RETURNING *",
+    "UPDATE operations SET category_id = $1, operation_date = $2, operation_sum = $3 WHERE id = $4 RETURNING *",
     [categoryId, date, sum, id],
     (error, result) => {
       if (error) {
